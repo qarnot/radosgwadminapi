@@ -1,0 +1,26 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workbench ActiveDocument="RadosGW.AdminAPI/Models/User.cs">
+    <Files>
+      <File FileName="RadosGW.AdminAPI/Models/Key.cs" Line="8" Column="9" />
+      <File FileName="RadosGW.AdminAPI/Models/User.cs" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="radosgwadminapi" expanded="True">
+            <Node name="RadosGWAdminAPI" expanded="True">
+              <Node name="Models" expanded="True">
+                <Node name="User.cs" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

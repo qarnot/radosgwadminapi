@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+
+    <licenseUrl>https://github.com/ClemPi/radosgwadminapi/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/ClemPi/radosgwadminapi</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <copyright>$author$</copyright>
+    <dependencies>
+      <dependency id="Newtonsoft.Json" version="9.0.1" />
+    </dependencies>
+  </metadata>
+</package>
