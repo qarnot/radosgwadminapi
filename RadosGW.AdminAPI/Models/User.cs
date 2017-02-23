@@ -31,7 +31,7 @@ namespace Radosgw.AdminAPI
         public override string ToString()
         {
             return string.Format("[User: DisplayName={0}, UserId={1}, Tenant={2}, Email={3}, MaxBuckets={4}, Suspended={5}, Keys={6}]", 
-                                 DisplayName, UserId, Tenant, Email, MaxBuckets, Suspended, string.Format("[{0}]", string.Join(",", Keys)));
+                                 DisplayName, UserId, Tenant, Email, MaxBuckets, Suspended, string.Format("[{0}]", string.Join(",", Keys ?? new List<Key>())));
         }
 
         public User()
