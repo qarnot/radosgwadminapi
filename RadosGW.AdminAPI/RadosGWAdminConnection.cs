@@ -137,19 +137,22 @@ namespace Radosgw.AdminAPI
             catch (WebException ex)
             {
                 string responseString = "";
-
+                var response = ex.Response as HttpWebResponse;
                 using (Stream stream = ex.Response.GetResponseStream())
                 {
                     StreamReader reader = new StreamReader(stream, Encoding.UTF8);
                     responseString = reader.ReadToEnd();
                 }
-                return responseString;
 
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("EX: " + ex);
-                return "";
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    throw new KeyNotFoundException(responseString);
+                }
+                else if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    throw new UnauthorizedAccessException(responseString);
+                }
+                throw new Exception(responseString);
             }
         }
 
