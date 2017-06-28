@@ -82,7 +82,7 @@ namespace Radosgw.AdminAPI
                 else
                     queryparams = "?";
                 queryparams += string.Join("&", requestParameters.Select(kvp =>
-                    string.Format("{0}={1}", kvp.Key, kvp.Value)));
+                    string.Format("{0}={1}", kvp.Key, Uri.EscapeDataString(kvp.Value))));
                 queryparams += "&format=json";
             }
             else {
