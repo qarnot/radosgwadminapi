@@ -66,7 +66,7 @@ namespace Radosgw.AdminAPI
             }
         }
 
-        public string SendRequest(string httpVerb, string path, Dictionary<string, string> requestParameters = null)
+        public string SendRequest(string httpVerb, string path, Dictionary<string, string> requestParameters = null, TimeSpan? timeout = null)
         {
             string HttpVerb = httpVerb;
             if (!path.StartsWith(this.adminPrefix))
@@ -118,6 +118,8 @@ namespace Radosgw.AdminAPI
             request.Headers.Add("x-amz-date", httpDate);
             request.Headers.Add("Authorization", "AWS " + this.accessKey + ":" + encodedCanonical);
             request.Method = HttpVerb;
+            if (timeout != null) // default timeout if none specified, no timeout: TimeSpan(-1)
+                request.Timeout = timeout.Value.Ticks < 0 ? -1 : (int)timeout.Value.TotalMilliseconds;
 
             // Get the response
             //HttpWebResponse response = null;
@@ -136,6 +138,8 @@ namespace Radosgw.AdminAPI
             }
             catch (WebException ex)
             {
+                if (ex.Status == WebExceptionStatus.Timeout)
+                    throw new TimeoutException();
                 string responseString = "";
                 var response = ex.Response as HttpWebResponse;
                 using (Stream stream = ex.Response.GetResponseStream())
@@ -179,12 +183,12 @@ namespace Radosgw.AdminAPI
             this.adminPrefix = adminPrefix;
         }
 
-        public User GetUserInfo(string uid, string tenant = null)
+        public User GetUserInfo(string uid, string tenant = null, TimeSpan? timeout = null)
         {
 
             var parameters = new Dictionary<string, string>();
             parameters.Add("uid", UserWithTenant(uid, tenant));
-            var rets = SendRequest("GET", "/user", parameters);
+            var rets = SendRequest("GET", "/user", parameters, timeout);
 
             return JsonConvert.DeserializeObject<User>(rets);
         }
@@ -192,7 +196,7 @@ namespace Radosgw.AdminAPI
         private User UserRequest(string reqType, string uid, string displayName, string tenant=null, 
                                  string email=null, string keyType=null, string accessKey=null,
                                  string secretKey=null, string userCaps=null, bool generateKey=true, 
-                                 uint MaxBuckets=1000, bool suspended=false)
+                                 uint MaxBuckets=1000, bool suspended=false, TimeSpan? timeout = null)
         {
             var req = new Dictionary<string, string>();
 
@@ -215,7 +219,7 @@ namespace Radosgw.AdminAPI
                 req.Add("max-buckets", MaxBuckets.ToString());
             if (suspended)
                 req.Add("suspended", "True");
-            var rets = SendRequest(reqType, "/user", req);
+            var rets = SendRequest(reqType, "/user", req, timeout);
             return JsonConvert.DeserializeObject<User>(rets);
         }
 
@@ -243,18 +247,18 @@ namespace Radosgw.AdminAPI
                    userCaps, generateKey, MaxBuckets, suspended);
         }
 
-        public string RemoveUser(string uid, string tenant = null, bool purgeData = false)
+        public string RemoveUser(string uid, string tenant = null, bool purgeData = false, TimeSpan? timeout = null)
         {
             var req = new Dictionary<string, string>();
             req.Add("uid", UserWithTenant(uid, tenant));
             if (purgeData)
                 req.Add("purge-data", "True");
-            return SendRequest("DELETE", "/user", req);
+            return SendRequest("DELETE", "/user", req, timeout);
 
         }
 
         public Key CreateKey(string uid, string tenant=null, string subuser=null, string keyType=null,
-                                string accessKey=null, string secretKey=null, bool generateKey=true)
+                                string accessKey=null, string secretKey=null, bool generateKey=true, TimeSpan? timeout = null)
         {
             var req = new Dictionary<string, string>();
             req.Add("uid", UserWithTenant(uid, tenant));
@@ -269,12 +273,12 @@ namespace Radosgw.AdminAPI
             if (!generateKey)
                 req.Add("generate-key", "False");
 
-            var rets = SendRequest("PUT", "/user?key", req);
+            var rets = SendRequest("PUT", "/user?key", req, timeout);
             return JsonConvert.DeserializeObject<Key>(rets);
         }
 
         public string RemoveKey(string uid, string accessKey, string tenant=null, string subUser=null,
-                                string keyType=null)
+                                string keyType=null, TimeSpan? timeout = null)
         {
             var req = new Dictionary<string, string>();
             req.Add("uid", UserWithTenant(uid, tenant));
@@ -284,7 +288,7 @@ namespace Radosgw.AdminAPI
             if (!string.IsNullOrEmpty(keyType))
                 req.Add("key-type", keyType);
 
-            return SendRequest("DELETE", "/user?key", req);
+            return SendRequest("DELETE", "/user?key", req, timeout);
         }
 
     }
