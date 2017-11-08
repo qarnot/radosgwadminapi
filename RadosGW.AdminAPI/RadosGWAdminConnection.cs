@@ -257,7 +257,7 @@ namespace Radosgw.AdminAPI
 
         }
 
-        public Key CreateKey(string uid, string tenant=null, string subuser=null, string keyType=null,
+        public IList<Key> CreateKey(string uid, string tenant=null, string subuser=null, string keyType=null,
                                 string accessKey=null, string secretKey=null, bool generateKey=true, TimeSpan? timeout = null)
         {
             var req = new Dictionary<string, string>();
@@ -274,7 +274,7 @@ namespace Radosgw.AdminAPI
                 req.Add("generate-key", "False");
 
             var rets = SendRequest("PUT", "/user?key", req, timeout);
-            return JsonConvert.DeserializeObject<Key>(rets);
+            return JsonConvert.DeserializeObject<IList<Key>>(rets);
         }
 
         public string RemoveKey(string uid, string accessKey, string tenant=null, string subUser=null,
