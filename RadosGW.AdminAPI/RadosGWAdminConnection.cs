@@ -133,6 +133,7 @@ namespace Radosgw.AdminAPI
                     StreamReader reader = new StreamReader(stream, Encoding.UTF8);
                     responseString = reader.ReadToEnd();
                 }
+                response.Close();
                 return responseString;
 
             }
@@ -147,6 +148,8 @@ namespace Radosgw.AdminAPI
                     StreamReader reader = new StreamReader(stream, Encoding.UTF8);
                     responseString = reader.ReadToEnd();
                 }
+
+                response.Close();
 
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
