@@ -28,6 +28,9 @@ namespace Radosgw.AdminAPI
         [JsonProperty(PropertyName="keys")]
         public List<Key> Keys { get; set; }
 
+        [JsonProperty(PropertyName="stats")]
+        public UserStats Stats { get; set; }
+
         public override string ToString()
         {
             return string.Format("[User: DisplayName={0}, UserId={1}, Tenant={2}, Email={3}, MaxBuckets={4}, Suspended={5}, Keys={6}]", 

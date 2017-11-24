@@ -186,12 +186,24 @@ namespace Radosgw.AdminAPI
             this.adminPrefix = adminPrefix;
         }
 
-        public User GetUserInfo(string uid, string tenant = null, TimeSpan? timeout = null)
+        public User GetUserInfo(string uid, string tenant = null, bool includeStats = false, TimeSpan? timeout = null)
         {
 
             var parameters = new Dictionary<string, string>();
             parameters.Add("uid", UserWithTenant(uid, tenant));
-            var rets = SendRequest("GET", "/user", parameters, timeout);
+            if (includeStats)
+                parameters.Add("stats", "true");
+
+            string rets;
+            try {
+                rets = SendRequest("GET", "/user", parameters, timeout);
+            } catch (KeyNotFoundException) { // rgw responds with a 404 for users with no stats
+                if (!includeStats)
+                    throw;
+
+                parameters.Remove("stats");
+                rets = SendRequest("GET", "/user", parameters, timeout);
+            }
 
             return JsonConvert.DeserializeObject<User>(rets);
         }
