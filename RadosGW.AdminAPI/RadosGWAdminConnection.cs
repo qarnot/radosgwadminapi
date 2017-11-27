@@ -208,6 +208,18 @@ namespace Radosgw.AdminAPI
             return JsonConvert.DeserializeObject<User>(rets);
         }
 
+        public UserQuota GetUserQuota(string uid, string tenant = null, QuotaType quotaType = QuotaType.User, TimeSpan? timeout = null)
+        {
+            var parameters = new Dictionary<string, string>
+            {
+                {"uid", UserWithTenant(uid, tenant)},
+                {"quota-type", quotaType.ToString().ToLower()},
+            };
+
+            var rets = SendRequest("GET", "/user?quota", parameters, timeout);
+            return JsonConvert.DeserializeObject<UserQuota>(rets);
+        }
+
         private User UserRequest(string reqType, string uid, string displayName, string tenant=null, 
                                  string email=null, string keyType=null, string accessKey=null,
                                  string secretKey=null, string userCaps=null, bool generateKey=true, 
