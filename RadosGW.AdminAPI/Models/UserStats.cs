@@ -5,37 +5,37 @@ namespace Radosgw.AdminAPI
     public class UserStats
     {
         [JsonProperty(PropertyName = "size")]
-        public uint Size { get; set; }
+        public ulong Size { get; set; }
 
         /// <summary>
         /// Size including replicas.
         /// </summary>
         [JsonProperty(PropertyName = "size_actual")]
-        public uint ActualSize { get; set; }
+        public ulong ActualSize { get; set; }
 
         /// <summary>
         /// Size after compression and encryption.
         /// </summary>
         [JsonProperty(PropertyName = "size_utilized")]
-        public uint SizeUtilized { get; set; }
+        public ulong SizeUtilized { get; set; }
 
         [JsonProperty(PropertyName = "size_kb")]
-        public uint SizeKB { get; set; }
+        public ulong SizeKB { get; set; }
 
         /// <summary>
         /// Size including replicas, rounded to KB.
         /// </summary>
         [JsonProperty(PropertyName = "size_kb_actual")]
-        public uint ActualSizeKB { get; set; }
+        public ulong ActualSizeKB { get; set; }
 
         /// <summary>
         /// Size after compression and encryption, rounded to KB.
         /// </summary>
         [JsonProperty(PropertyName = "size_kb_utilized")]
-        public uint SizeUtilzedKB { get; set; }
+        public ulong SizeUtilzedKB { get; set; }
 
         [JsonProperty(PropertyName="num_objects")]
-        public uint NumObjects { get; set; }
+        public ulong NumObjects { get; set; }
 
         public override string ToString()
         {
