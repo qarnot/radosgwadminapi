@@ -10,11 +10,9 @@ namespace Radosgw.AdminAPI
 
     public class UserQuota
     {
-        [JsonConverter(typeof(BoolConverter))]
         [JsonProperty(PropertyName = "enabled")]
         public bool Enabled { get; set; }
 
-        [JsonConverter(typeof(BoolConverter))]
         [JsonProperty(PropertyName = "check_on_raw")]
         public bool CheckOnRaw { get; set; }
 
