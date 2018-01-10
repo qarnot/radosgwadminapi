@@ -122,7 +122,6 @@ namespace Radosgw.AdminAPI
                 request.Timeout = timeout.Value.Ticks < 0 ? -1 : (int)timeout.Value.TotalMilliseconds;
 
             // Get the response
-            //HttpWebResponse response = null;
             try
             {
                 var response = (HttpWebResponse)request.GetResponse();
@@ -139,6 +138,8 @@ namespace Radosgw.AdminAPI
             }
             catch (WebException ex)
             {
+                if (ex.Status == WebExceptionStatus.ConnectFailure)
+                    throw;
                 if (ex.Status == WebExceptionStatus.Timeout)
                     throw new TimeoutException();
                 string responseString = "";
