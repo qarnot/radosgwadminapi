@@ -12,7 +12,15 @@
     <description>$description$</description>
     <copyright>$author$</copyright>
     <dependencies>
-      <dependency id="Newtonsoft.Json" version="9.0.1" />
+      <!-- Net standard 2 -->
+      <group targetFramework="netstandard2.0">
+        <dependency id="Newtonsoft.Json" version="12.0.1" />
+      </group>
+      <!-- net 45 -->
+      <group targetFramework="net4.5">
+        <dependency id="Newtonsoft.Json" version="9.0.1" />
+      </group>
+
     </dependencies>
   </metadata>
 </package>
