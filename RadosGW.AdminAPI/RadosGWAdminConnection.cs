@@ -142,24 +142,23 @@ namespace Radosgw.AdminAPI
                 if (ex.Status == WebExceptionStatus.Timeout)
                     throw new TimeoutException();
                 string responseString = "";
-                var response = ex.Response as HttpWebResponse;
-                using (Stream stream = ex.Response.GetResponseStream())
+                using (var response = ex.Response as HttpWebResponse)
                 {
-                    StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-                    responseString = reader.ReadToEnd();
+                    using (Stream stream = response.GetResponseStream())
+                    using(var reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        responseString = reader.ReadToEnd();
+                    }
+                    if (response.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        throw new KeyNotFoundException(responseString);
+                    }
+                    else if (response.StatusCode == HttpStatusCode.Forbidden)
+                    {
+                        throw new UnauthorizedAccessException(responseString);
+                    }
+                    throw new Exception(responseString);
                 }
-
-                response.Close();
-
-                if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                    throw new KeyNotFoundException(responseString);
-                }
-                else if (response.StatusCode == HttpStatusCode.Forbidden)
-                {
-                    throw new UnauthorizedAccessException(responseString);
-                }
-                throw new Exception(responseString);
             }
         }
 
