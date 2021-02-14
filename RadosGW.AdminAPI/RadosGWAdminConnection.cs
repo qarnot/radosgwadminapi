@@ -556,5 +556,16 @@ namespace Radosgw.AdminAPI
             return SendRequest("DELETE", "/user?key", req, timeout);
         }
 
+        public async Task<IList<string>> ListUsersAsync(TimeSpan? timeout = null)
+        {
+            var rets = await SendRequestAsync("GET", "/metadata/user", timeout: timeout);
+            return JsonConvert.DeserializeObject<IList<string>>(rets);
+        }
+
+        public async Task<IList<string>> ListBucketsAsync(TimeSpan? timeout = null)
+        {
+            var rets = await SendRequestAsync("GET", "/metadata/bucket", timeout: timeout);
+            return JsonConvert.DeserializeObject<IList<string>>(rets);
+        }
     }
 }
