@@ -28,6 +28,9 @@ namespace Radosgw.AdminAPI
         [JsonProperty(PropertyName="keys")]
         public List<Key> Keys { get; set; }
 
+        [JsonProperty(PropertyName="subusers")]
+        public List<Subuser> SubUsers { get; set; }
+
         [JsonProperty(PropertyName="stats")]
         public UserStats Stats { get; set; }
 
