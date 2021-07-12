@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Radosgw.AdminAPI</RootNamespace>
     <AssemblyName>Radosgw.AdminAPI</AssemblyName>
-    <Version>2.0.0</Version>
+    <Version>3.0.1</Version>
     <TargetFrameworks>netstandard2.1;netstandard2.0;net45</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
