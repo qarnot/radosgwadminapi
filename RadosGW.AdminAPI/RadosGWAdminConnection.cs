@@ -171,6 +171,14 @@ namespace Radosgw.AdminAPI
                 return string.Format("{0}${1}", tenant, user);
         }
 
+        private string BucketWithTenant(string bucket, string tenant=null)
+        {
+            if (string.IsNullOrEmpty(tenant))
+                return bucket;
+            else
+                return string.Format("{0}/{1}", tenant, bucket);
+        }
+
         public RadosGWAdminConnection(string host, string accessKey, string secretKey, string adminPrefix="/admin")
             : this(new Uri(host), accessKey, secretKey, adminPrefix)
         {
@@ -225,8 +233,8 @@ namespace Radosgw.AdminAPI
         {
             var request = new Dictionary<string, string>()
             {
-                {"uid", tenant == null ? uid : tenant + "$" + uid},
-                {"quota-type", quotaType.ToString().ToLower()},
+                { "uid", UserWithTenant(uid, tenant) },
+                { "quota-type", quotaType.ToString().ToLower() },
             };
             if (enabled != default)
             {
@@ -250,11 +258,11 @@ namespace Radosgw.AdminAPI
         }
 
         public async Task<List<Subuser>> CreateSubuserAsync(string uid, string tenant=null, string subuser=null, string keyType=null,
-            string access=null, string accessKey=null, string secretKey=null, bool generateKey=true, TimeSpan? timeout = null)
+            string access=null, string accessKey=null, string secretKey=null, bool generateSecret=false, TimeSpan? timeout = null)
         {
             var request = new Dictionary<string, string>()
             {
-                {"uid", tenant == null ? uid : tenant + "$" + uid},
+                { "uid", UserWithTenant(uid, tenant) },
             };
             if (!string.IsNullOrEmpty(subuser))
                 request.Add("subuser", subuser);
@@ -266,10 +274,32 @@ namespace Radosgw.AdminAPI
                 request.Add("access-key", accessKey);
             if (!string.IsNullOrEmpty(secretKey))
                 request.Add("secret-key", secretKey);
-            if (!generateKey)
-                request.Add("generate-key", "False");
+            if (generateSecret)
+                request.Add("generate-secret", "True");
 
             var response = await SendRequestAsync("PUT", "/user?subuser", request, timeout);
+            return JsonConvert.DeserializeObject<List<Subuser>>(response);
+        }
+
+        public async Task<List<Subuser>> ModifySubuserAsync(
+            string uid,
+            string subuser,
+            string tenant=null,
+            string keyType="s3",
+            string access="read",
+            TimeSpan? timeout = null)
+        {
+            var request = new Dictionary<string, string>()
+            {
+                { "uid", UserWithTenant(uid, tenant) },
+            };
+            if (!string.IsNullOrEmpty(subuser))
+                request.Add("subuser", subuser);
+            if (!string.IsNullOrEmpty(keyType))
+                request.Add("key-type", keyType);
+            if (!string.IsNullOrEmpty(access))
+                request.Add("access", access);
+            var response = await SendRequestAsync("POST", "/user?subuser", request, timeout);
             return JsonConvert.DeserializeObject<List<Subuser>>(response);
         }
 
@@ -277,7 +307,7 @@ namespace Radosgw.AdminAPI
         {
             var request = new Dictionary<string, string>()
             {
-                {"uid", tenant == null ? uid : tenant + "$" + uid},
+                { "uid", UserWithTenant(uid, tenant) },
             };
             if (!string.IsNullOrEmpty(subuser))
                 request.Add("subuser", subuser);
@@ -341,13 +371,16 @@ namespace Radosgw.AdminAPI
                    userCaps, generateKey, MaxBuckets, suspended);
         }
 
-        public async Task<string> RemoveUserAsync(string uid, string tenant = null, bool purgeData = false, TimeSpan? timeout = null)
+        public async Task RemoveUserAsync(string uid, string tenant = null, bool purgeData = false, TimeSpan? timeout = null)
         {
-            var req = new Dictionary<string, string>();
-            req.Add("uid", UserWithTenant(uid, tenant));
+            var req = new Dictionary<string, string>()
+            {
+                { "uid", UserWithTenant(uid, tenant) },
+            };
+
             if (purgeData)
                 req.Add("purge-data", "True");
-            return await SendRequestAsync("DELETE", "/user", req, timeout);
+            await SendRequestAsync("DELETE", "/user", req, timeout);
         }
 
         public async Task<IList<Key>> CreateKeyAsync(string uid, string tenant=null, string subuser=null, string keyType=null,
@@ -394,6 +427,21 @@ namespace Radosgw.AdminAPI
         {
             var rets = await SendRequestAsync("GET", "/metadata/bucket", timeout: timeout);
             return JsonConvert.DeserializeObject<IList<string>>(rets);
+        }
+
+        public async Task RemoveBucketAsync(
+            string bucket,
+            string tenant=null,
+            bool purgeObjects = false,
+            TimeSpan? timeout = null)
+        {
+            var request = new Dictionary<string, string>()
+            {
+                { "bucket", BucketWithTenant(bucket, tenant) },
+            };
+            if (purgeObjects)
+                request.Add("purge-objects", "True");
+            await SendRequestAsync("DELETE", "/bucket", request, timeout);
         }
     }
 }
