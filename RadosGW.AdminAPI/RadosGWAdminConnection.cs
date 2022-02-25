@@ -103,7 +103,7 @@ namespace Radosgw.AdminAPI
             // now encode the canonical string
             Encoding ae = new UTF8Encoding();
             // create a hashing object
-            HMACSHA1 signature = new HMACSHA1();
+            using var signature = new HMACSHA1();
             // secretId is the hash key
             signature.Key = ae.GetBytes(this.secretKey);
             byte[] bytes = ae.GetBytes(canonicalString);
@@ -124,17 +124,12 @@ namespace Radosgw.AdminAPI
             // Get the response
             try
             {
-                var response = (HttpWebResponse) await request.GetResponseAsync();
-                string responseString = "";
-
-                using (Stream stream = response.GetResponseStream())
+                using (var response = (HttpWebResponse) await request.GetResponseAsync())
+                using (var stream = response.GetResponseStream())
+                using (var reader = new StreamReader(stream, Encoding.UTF8))
                 {
-                    StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-                    responseString = await reader.ReadToEndAsync();
+                    return await reader.ReadToEndAsync();
                 }
-                response.Close();
-                return responseString;
-
             }
             catch (WebException ex)
             {
@@ -145,8 +140,8 @@ namespace Radosgw.AdminAPI
                 string responseString = "";
                 using (var response = ex.Response as HttpWebResponse)
                 {
-                    using (Stream stream = response.GetResponseStream())
-                    using(var reader = new StreamReader(stream, Encoding.UTF8))
+                    using (var stream = response.GetResponseStream())
+                    using (var reader = new StreamReader(stream, Encoding.UTF8))
                     {
                         responseString = await reader.ReadToEndAsync();
                     }
@@ -320,12 +315,13 @@ namespace Radosgw.AdminAPI
         private async Task<User> UserRequestAsync(string reqType, string uid, string displayName, string tenant=null, 
                                  string email=null, string keyType=null, string accessKey=null,
                                  string secretKey=null, string userCaps=null, bool generateKey=true, 
-                                 uint MaxBuckets=1000, bool suspended=false, TimeSpan? timeout = null)
+                                 uint? MaxBuckets=null, bool suspended=false, TimeSpan? timeout = null)
         {
-            var req = new Dictionary<string, string>();
-
-            req.Add("uid", UserWithTenant(uid, tenant));
-            req.Add("display-name", displayName);
+            var req = new Dictionary<string, string>
+            {
+                { "uid", UserWithTenant(uid, tenant) },
+                { "display-name", displayName }
+            };
 
             if (!string.IsNullOrEmpty(email))
                 req.Add("email", email);
@@ -339,8 +335,8 @@ namespace Radosgw.AdminAPI
                 req.Add("caps", userCaps);
             if (!generateKey)
                 req.Add("generate-key", "False");
-            if (MaxBuckets != 1000)
-                req.Add("max-buckets", MaxBuckets.ToString());
+            if (MaxBuckets != null)
+                req.Add("max-buckets", MaxBuckets.Value.ToString());
             if (suspended)
                 req.Add("suspended", "True");
             var rets = await SendRequestAsync(reqType, "/user", req, timeout);
@@ -364,7 +360,7 @@ namespace Radosgw.AdminAPI
 
         public async Task<User> ModifyUserAsync(string uid, string displayName=null, string tenant=null, string email=null,
                                  string keyType=null, string accessKey=null, string secretKey=null,
-                                 string userCaps=null, bool generateKey=true, uint MaxBuckets=1000,
+                                 string userCaps=null, bool generateKey=true, uint? MaxBuckets=null,
                                  bool suspended=false)
         {
             return await UserRequestAsync("POST", uid, displayName, tenant, email, keyType, accessKey, secretKey,
