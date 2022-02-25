@@ -103,57 +103,59 @@ namespace Radosgw.AdminAPI
             // now encode the canonical string
             Encoding ae = new UTF8Encoding();
             // create a hashing object
-            using var signature = new HMACSHA1();
-            // secretId is the hash key
-            signature.Key = ae.GetBytes(this.secretKey);
-            byte[] bytes = ae.GetBytes(canonicalString);
-            byte[] moreBytes = signature.ComputeHash(bytes);
-            // convert the hash byte array into a base64 encoding
-            string encodedCanonical = Convert.ToBase64String(moreBytes);
-
-
-            var u = new Uri(host, path + queryparams);
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(u);
-            request.Headers.Add("x-amz-date", httpDate);
-            request.Headers.Add("Authorization", "AWS " + this.accessKey + ":" + encodedCanonical);
-            request.Method = HttpVerb;
-            if (timeout != null) // default timeout if none specified, no timeout: TimeSpan(-1)
-                request.Timeout = timeout.Value.Ticks < 0 ? -1 : (int)timeout.Value.TotalMilliseconds;
-
-            // Get the response
-            try
+            using (var signature = new HMACSHA1())
             {
-                using (var response = (HttpWebResponse) await request.GetResponseAsync())
-                using (var stream = response.GetResponseStream())
-                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                // secretId is the hash key
+                signature.Key = ae.GetBytes(this.secretKey);
+                byte[] bytes = ae.GetBytes(canonicalString);
+                byte[] moreBytes = signature.ComputeHash(bytes);
+                // convert the hash byte array into a base64 encoding
+                string encodedCanonical = Convert.ToBase64String(moreBytes);
+
+
+                var u = new Uri(host, path + queryparams);
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(u);
+                request.Headers.Add("x-amz-date", httpDate);
+                request.Headers.Add("Authorization", "AWS " + this.accessKey + ":" + encodedCanonical);
+                request.Method = HttpVerb;
+                if (timeout != null) // default timeout if none specified, no timeout: TimeSpan(-1)
+                    request.Timeout = timeout.Value.Ticks < 0 ? -1 : (int)timeout.Value.TotalMilliseconds;
+
+                // Get the response
+                try
                 {
-                    return await reader.ReadToEndAsync();
-                }
-            }
-            catch (WebException ex)
-            {
-                if (ex.Status == WebExceptionStatus.ConnectFailure)
-                    throw;
-                if (ex.Status == WebExceptionStatus.Timeout)
-                    throw new TimeoutException();
-                string responseString = "";
-                using (var response = ex.Response as HttpWebResponse)
-                {
+                    using (var response = (HttpWebResponse) await request.GetResponseAsync())
                     using (var stream = response.GetResponseStream())
                     using (var reader = new StreamReader(stream, Encoding.UTF8))
                     {
-                        responseString = await reader.ReadToEndAsync();
+                        return await reader.ReadToEndAsync();
                     }
-                    if (response.StatusCode == HttpStatusCode.NotFound)
+                }
+                catch (WebException ex)
+                {
+                    if (ex.Status == WebExceptionStatus.ConnectFailure)
+                        throw;
+                    if (ex.Status == WebExceptionStatus.Timeout)
+                        throw new TimeoutException();
+                    string responseString = "";
+                    using (var response = ex.Response as HttpWebResponse)
                     {
-                        throw new KeyNotFoundException(responseString);
+                        using (var stream = response.GetResponseStream())
+                        using (var reader = new StreamReader(stream, Encoding.UTF8))
+                        {
+                            responseString = await reader.ReadToEndAsync();
+                        }
+                        if (response.StatusCode == HttpStatusCode.NotFound)
+                        {
+                            throw new KeyNotFoundException(responseString);
+                        }
+                        else if (response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            throw new UnauthorizedAccessException(responseString);
+                        }
+                        throw new Exception(responseString);
                     }
-                    else if (response.StatusCode == HttpStatusCode.Forbidden)
-                    {
-                        throw new UnauthorizedAccessException(responseString);
-                    }
-                    throw new Exception(responseString);
                 }
             }
         }
