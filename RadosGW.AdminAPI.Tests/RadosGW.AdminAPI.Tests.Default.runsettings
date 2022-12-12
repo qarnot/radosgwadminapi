@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+    <RunConfiguration>
+        <EnvironmentVariables>
+            <RADOSGWADMIN_TESTS_ACCESS>access</RADOSGWADMIN_TESTS_ACCESS>
+            <RADOSGWADMIN_TESTS_SECRET>secret</RADOSGWADMIN_TESTS_SECRET>
+            <RADOSGWADMIN_TESTS_ENDPOINT>http://127.0.0.1</RADOSGWADMIN_TESTS_ENDPOINT>
+            <RADOSGWADMIN_TESTS_PATH>/admin</RADOSGWADMIN_TESTS_PATH>
+        </EnvironmentVariables>
+    </RunConfiguration>
+</RunSettings>

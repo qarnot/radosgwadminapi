@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Radosgw.AdminAPI</RootNamespace>
     <AssemblyName>Radosgw.AdminAPI</AssemblyName>
-    <Version>3.1.1</Version>
+    <Version>3.1.2</Version>
     <TargetFrameworks>netstandard2.1;netstandard2.0;net45</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -29,15 +29,15 @@
 
   <!-- NET45 Deps -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
   <!-- NETSTANDARD 2.0 Deps -->
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
   <!-- NETSTANDARD 2.1 Deps -->
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
   <ItemGroup>
     <None Include="RadosGWAdminAPI.nuspec" />

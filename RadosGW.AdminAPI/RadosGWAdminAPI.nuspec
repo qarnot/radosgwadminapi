@@ -14,11 +14,11 @@
     <dependencies>
       <!-- Net standard 2 -->
       <group targetFramework="netstandard2.0">
-        <dependency id="Newtonsoft.Json" version="12.0.1" />
+        <dependency id="Newtonsoft.Json" version="13.0.2" />
       </group>
       <!-- net 45 -->
       <group targetFramework="net4.5">
-        <dependency id="Newtonsoft.Json" version="9.0.1" />
+        <dependency id="Newtonsoft.Json" version="13.0.2" />
       </group>
 
     </dependencies>

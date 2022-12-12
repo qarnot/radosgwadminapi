@@ -2,8 +2,9 @@
   <PropertyGroup>
     <RootNamespace>Radosgw.AdminAPI.Tests</RootNamespace>
     <AssemblyName>Radosgw.AdminAPI.Tests</AssemblyName>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
+    <RunSettingsFilePath Condition="Exists('.\RadosGW.AdminAPI.Tests.Default.runsettings')">.\RadosGW.AdminAPI.Tests.Default.runsettings</RunSettingsFilePath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.7.1.12" />
